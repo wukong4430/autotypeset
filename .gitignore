@@ -1,0 +1,12 @@
+
+
+# 忽略Python自动生成的文件
+*.py[cod]
+*.so
+*.egg
+*.egg-info
+dist
+build
+
+# 忽略本地Python虚拟环境[autotype]
+autotype/
