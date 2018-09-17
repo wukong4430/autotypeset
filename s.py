@@ -4,7 +4,7 @@
 # @Author: KICC
 # @Date:   2018-07-27 12:03:41
 # @Last Modified by:   KICC
-# @Last Modified time: 2018-09-16 18:09:18
+# @Last Modified time: 2018-09-17 17:14:33
 
 from docx import Document
 from PIL import Image, ImageDraw
@@ -12,6 +12,7 @@ from io import BytesIO
 from docx.shared import Inches, Pt
 from docx.enum.section import WD_ORIENT
 from docx.enum.text import WD_LINE_SPACING
+from docx.oxml.ns import qn
 
 from utils import *
 
@@ -93,30 +94,62 @@ def character_operation():
     """
     document = Document('demo1.docx')
     # print('paragraph 2:', document.paragraphs[1].text)
-    runs = document.paragraphs[1].runs
-    back_text = runs[0].text
-    print(back_text)
+    all_paragraphs = document.paragraphs
 
-    # 获取该行原本的style
-    origin_style = document.paragraphs[1].style
+    for idx, paragraph in enumerate(all_paragraphs):
+        if paragraph.text == '':
+            continue
+        runs = paragraph.runs
+        if len(runs) == 1:
+            # 整个段落只有一个run
+            back_text = runs[0].text
+            back_format = paragraph.paragraph_format
+            if idx == len(all_paragraphs) - 1:
+                # 如果是最后一个段落
+                # p = all_paragraphs[idx-1]
+                p = document.add_paragraph()
 
-    p = document.paragraphs[2].insert_paragraph_before()
+            else:
+                p = all_paragraphs[idx + 1].insert_paragraph_before()
 
-    for i, ch in enumerate(back_text):
-        run = p.add_run(ch)
-        font = run.font
-        font.size = Pt(10)
-        if ch in ['1', '2', '3']:
-            font.name = u'微软雅黑'
-            font.italic = True
+            runs[0].clear()
+            # 改变font
+            modify_character(back_text=back_text, p=p)
+            # 调整段落style
+            adjust_paragraph_style(formats=back_format, paragraph=p)
+            # 删除原本的段落
+            delete_paragraph(paragraph)
+
         else:
-            font.name = u'宋体'
+            # 整个段落不只有一个run
+            pass
 
-    runs[0].clear()
+    # paragraph_modify = document.paragraphs[1]
+    # runs = paragraph_modify.runs
+    # back_text = runs[0].text
+    # print(back_text)
 
-    # 将原本的paragraph_format应用到生成的新的paragraph上
-    # TODO
+    # p = document.paragraphs[2].insert_paragraph_before()
+    # runs[0].clear()
+    # for i, ch in enumerate(back_text):
+    #     run = p.add_run(ch)
+    #     font = run.font
+    #     font.size = Pt(10)
+    #     if ch in ['1', '2', '3']:
+    #         font.name = u'微软雅黑'
+    #         run._element.rPr.rFonts.set(qn('w:eastAsia'), u'微软雅黑')
+    #     else:
+    #         font.name = u'宋体'
+    #         run._element.rPr.rFonts.set(qn('w:eastAsia'), u'宋体')
 
+    # # 将原本的paragraph_format应用到生成的新的paragraph上
+    # # TODO
+    # # paragraph.style = origin_style
+    # print("After Modifying :", p.style.font.name)
+
+    # adjust_paragraph_style(paragraph=p)
+
+    # delete_paragraph(paragraph_modify)
     document.save('demo1.docx')
 
 
@@ -142,7 +175,8 @@ def section_operation():
 
 
 def main():
-    paragraph_operation()
+    character_operation()
+    # adjust_paragraph_style()
 
 
 if __name__ == '__main__':
