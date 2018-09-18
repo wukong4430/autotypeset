@@ -4,7 +4,7 @@
 # @Author: KICC
 # @Date:   2018-07-27 12:03:41
 # @Last Modified by:   KICC
-# @Last Modified time: 2018-09-17 17:14:33
+# @Last Modified time: 2018-09-18 13:36:13
 
 from docx import Document
 from PIL import Image, ImageDraw
@@ -104,6 +104,8 @@ def character_operation():
             # 整个段落只有一个run
             back_text = runs[0].text
             back_format = paragraph.paragraph_format
+            print('是哪个段落:', paragraph.text)
+            print('indent :', back_format.first_line_indent)
             if idx == len(all_paragraphs) - 1:
                 # 如果是最后一个段落
                 # p = all_paragraphs[idx-1]
@@ -114,15 +116,18 @@ def character_operation():
 
             runs[0].clear()
             # 改变font
-            modify_character(back_text=back_text, p=p)
+            modify_character(back_text=back_text, p=p,
+                             category='正文')
             # 调整段落style
-            adjust_paragraph_style(formats=back_format, paragraph=p)
+            adjust_paragraph_style(formats=back_format,
+                                   paragraph=p, category='正文')
             # 删除原本的段落
             delete_paragraph(paragraph)
 
         else:
             # 整个段落不只有一个run
-            pass
+            print("该段落不止一个run, 该段落是:")
+            print(paragraph.text)
 
     # paragraph_modify = document.paragraphs[1]
     # runs = paragraph_modify.runs
@@ -150,7 +155,7 @@ def character_operation():
     # adjust_paragraph_style(paragraph=p)
 
     # delete_paragraph(paragraph_modify)
-    document.save('demo1.docx')
+    # document.save('demo1.docx')
 
 
 def section_operation():
