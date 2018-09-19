@@ -2,11 +2,12 @@
 # @Author: KICC
 # @Date:   2018-09-16 17:34:46
 # @Last Modified by:   KICC
-# @Last Modified time: 2018-09-18 16:32:48
+# @Last Modified time: 2018-09-19 19:18:02
 
 from docx.shared import Inches, Pt
 from docx.oxml.ns import qn
 from docx.enum.text import WD_LINE_SPACING
+
 
 def delete_paragraph(paragraph):
     p = paragraph._element
@@ -25,7 +26,7 @@ def modify_character(back_text, p, category):
         run = p.add_run(ch)
         font = run.font
         if category == '正文':
-            font.size = Pt(10)
+            font.size = Pt(12)
             if '0' <= ch <= '9' or 'a' <= ch <= 'z' or 'A' <= ch <= 'z':
                 font.name = u'微软雅黑'
                 run._element.rPr.rFonts.set(qn('w:eastAsia'), u'微软雅黑')
@@ -34,10 +35,34 @@ def modify_character(back_text, p, category):
                 run._element.rPr.rFonts.set(qn('w:eastAsia'), u'宋体')
         elif category == '章标题':
             # 1 绪论
-            pass
+            # 中文摘要,结论,参考文献标题 也是这个format
+            # 小2 == Pt(18)
+            font.size = Pt(18)
+            font.name = '黑体'
+            font.bold = False
 
         elif category == '一级标题':
             # 1.1
+            # 四号 == Pt(14)
+            font.size = Pt(14)
+            font.name = '黑体'
+            font.bold = False
+
+        elif category == '二级标题':
+            # 1.1.1
+            # 小4 == Pt(12)
+            font.size = Pt(12)
+            font.name = '黑体'
+            font.bold = False
+
+        elif category == '三级标题':
+            # 1.1.1.1
+            # 小4 == Pt(12)
+            font.size = Pt(12)
+            font.name = '黑体'
+            font.bold = False
+
+        else:
             pass
 
 
@@ -84,7 +109,7 @@ def adjust_paragraph_style(formats, paragraph, category):
         p_format.line_spacing = 1.0
         p_format.space_before = None
 
-    elif category=='章标题':
+    elif category == '章标题':
         # 1.
         # 章标题的段前0.8行,段后0.5行;
         p_format = paragraph.paragraph_format
